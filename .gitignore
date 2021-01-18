@@ -1,0 +1,3 @@
+jupyterhub_config.py
+jupyterhub_cookie_secret
+*.sqlite
