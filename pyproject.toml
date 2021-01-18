@@ -15,4 +15,4 @@ requires=[
 requires-python=">=3.5"
 
 [tool.flit.scripts]
-mlflow-jupyterhub-auth = "mlflow_jupyterhub_auth:main"
+jupyterhub-mlflow-auth = "jupyterhub_mlflow_auth:main"

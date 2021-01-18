@@ -28,7 +28,7 @@ c.JupyterHub.services = [
     {
         "name": "mlflow",
         "admin": True,
-        "url": "http://127.0.0.1:8700",
+        "url": "http://127.0.0.1:8700",  # this port should match below.
         "api_token": "<JUPYTERHUB_API_TOKEN>"
     }
 ]
@@ -44,9 +44,8 @@ c.SimpleLocalProcessSpawner.home_dir_template = os.getcwd()
 We'll need to start the three servers. In this example we have
 
 1. `mlflow` on port 5000 with the static prefix `/services/mlflow`
-2. `mlflow_jupyterhub_auth` on port 
-
-1. `mlflow`
+2. `mlflow_jupyterhub_auth` on the default port (`8700`)
+3. `mlflow`
 
 ```console
 $mlflow server --static-prefix=/services/mlflow
@@ -58,5 +57,14 @@ $mlflow server --static-prefix=/services/mlflow
 2. MLFlow JupyterHub Auth
 
 ```console
-$ MLFLOW_JUPYTERHUB_AUTH_TARGET="127.0.0.1:5000" JUPYTERHUB_API_TOKEN=super-secret python main.py
+$ MLFLOW_JUPYTERHUB_AUTH_TARGET="127.0.0.1:5000" JUPYTERHUB_API_TOKEN=<JUPYTERHUB_API_TOKEN> jupyterhub-mlflow-auth
 ```
+
+3. JupyterHub
+
+```console
+$ jupyterhub --config=jupyterhub_config.py 
+```
+The console output for jupyterhub should include adding a service for jupyterhub-mlflow-auth at 8700, which will proxy requests to the MLFLow server at 127.0.0.1:5000 after authenticating.
+
+Accessing the MLFlow service at, e.g. `http://localhost:8000/services/mlflow/#/` should now prompt for authentication before redirecting to MLFlow.

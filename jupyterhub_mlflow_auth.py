@@ -57,10 +57,14 @@ class HubProxyHandler(HubAuthenticated, web.RequestHandler):
         self.set_header("Content-Type", resp.headers.get("Content-Type"))
 
 
-if __name__ == "__main__":
+def main():
     application = web.Application([
         (r"/.*", HubProxyHandler),
     ])
     application.listen(MLFLOW_JUPYTERHUB_AUTH_PORT)
     logger.info("listening at %d", MLFLOW_JUPYTERHUB_AUTH_PORT)
     ioloop.IOLoop.current().start()
+
+
+if __name__ == "__main__":
+    main()
