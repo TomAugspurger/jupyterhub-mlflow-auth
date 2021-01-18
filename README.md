@@ -11,8 +11,8 @@ a simple HTTP Proxy that delegates to JupyterHub for authentication.
 The following environment variables should be set:
 
 1. `JUPYTERHUB_API_TOKEN`: The API token for JupyterHub.
-2. `MLFLOW_JUPYTERHUB_AUTH_TARGET`: The target URI where MLFLow is running.
-3. `MLFLOW_JUPYTERHUB_AUTH_PORT`: The port that this tornado server should listen on. JupyterHub should look for the service on this port (default `8700`).
+2. `JUPYTERHUB_MLFLOW_AUTH_TARGET`: The target URI where MLFLow is running.
+3. `JUPYTERHUB_MLFLOW_AUTH_PORT`: The port that this tornado server should listen on. JupyterHub should look for the service on this port (default `8700`).
 
 Given a `jupyterhub_config.py` with an MLFlow service like:
 
@@ -57,7 +57,7 @@ $mlflow server --static-prefix=/services/mlflow
 2. MLFlow JupyterHub Auth
 
 ```console
-$ MLFLOW_JUPYTERHUB_AUTH_TARGET="127.0.0.1:5000" JUPYTERHUB_API_TOKEN=<JUPYTERHUB_API_TOKEN> jupyterhub-mlflow-auth
+$ JUPYTERHUB_MLFLOW_AUTH_TARGET="127.0.0.1:5000" JUPYTERHUB_API_TOKEN=<JUPYTERHUB_API_TOKEN> jupyterhub-mlflow-auth
 ```
 
 3. JupyterHub

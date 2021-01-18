@@ -15,11 +15,11 @@ __version__ = "1.0.0"
 
 if os.environ.get("JUPYTERHUB_API_TOKEN", None) is None:
     raise RuntimeError("set JUPYTERHUB_API_TOKEN")
-MLFLOW_JUPYTERHUB_AUTH_TARGET =  os.environ.get("MLFLOW_JUPYTERHUB_AUTH_TARGET")
-if MLFLOW_JUPYTERHUB_AUTH_TARGET is None:
-    raise RuntimeError("set MLFLOW_JUPYTERHUB_AUTH_TARGET")
+JUPYTERHUB_MLFLOW_AUTH_TARGET =  os.environ.get("JUPYTERHUB_MLFLOW_AUTH_TARGET")
+if JUPYTERHUB_MLFLOW_AUTH_TARGET is None:
+    raise RuntimeError("set JUPYTERHUB_MLFLOW_AUTH_TARGET")
 
-MLFLOW_JUPYTERHUB_AUTH_PORT = int(os.environ.get("MLFLOW_JUPYTERHUB_AUTH_PORT", 8700))
+JUPYTERHUB_MLFLOW_AUTH_PORT = int(os.environ.get("JUPYTERHUB_MLFLOW_AUTH_PORT", 8700))
 
 logger = logging.getLogger("tornado")
 logger.setLevel(logging.INFO)
@@ -35,7 +35,7 @@ class HubProxyHandler(HubAuthenticated, web.RequestHandler):
         await self.proxy_request(self.request, method="POST")
 
     async def proxy_request(self, request, method):
-        url = "http://" + MLFLOW_JUPYTERHUB_AUTH_TARGET  + request.uri
+        url = "http://" + JUPYTERHUB_MLFLOW_AUTH_TARGET  + request.uri
         body = None if method == "GET" else self.request.body
         proxy_request = HTTPRequest(url, method=method, headers=request.headers, body=body)
         client = AsyncHTTPClient()
@@ -61,8 +61,8 @@ def main():
     application = web.Application([
         (r"/.*", HubProxyHandler),
     ])
-    application.listen(MLFLOW_JUPYTERHUB_AUTH_PORT)
-    logger.info("listening at %d", MLFLOW_JUPYTERHUB_AUTH_PORT)
+    application.listen(JUPYTERHUB_MLFLOW_AUTH_PORT)
+    logger.info("listening at %d", JUPYTERHUB_MLFLOW_AUTH_PORT)
     ioloop.IOLoop.current().start()
 
 
