@@ -11,7 +11,7 @@ from jupyterhub.services.auth import HubAuthenticated
 from tornado import web, ioloop
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPClientError
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 if os.environ.get("JUPYTERHUB_API_TOKEN", None) is None:
     raise RuntimeError("set JUPYTERHUB_API_TOKEN")
@@ -26,6 +26,24 @@ logger.setLevel(logging.INFO)
 
 
 class HubProxyHandler(HubAuthenticated, web.RequestHandler):
+    def get_current_user(self):
+        """
+        Overrides HubAuthenticated.get_current_user to work with MLFLow.
+
+        MLFLow clients really only support HTTP Basic auth and HTTP Bearer auth. This
+        doesn't jive with JupyterHub's auth.
+
+        Under the assumption that we can't change the MLFlow clients, we make do with
+        Bearer auth. We'll configure *clients* to make requests with
+        `Authorization: Bearer <JUPYTERHUB_API_TOKEN>`. Then our proxy will look for
+        `Bearer` authentication, and substitute in `Authorization: token <JUPYTERHUB_API_TOKEN>`.
+        """
+        auth = self.request.headers.get("Authorization")
+        if auth and auth.startswith("Bearer "):
+            auth = "token %s" % auth.split(" ", 1)[1]
+            self.request.headers["Authorization"] = auth
+        return super().get_current_user()
+
     @web.authenticated
     async def get(self):
         await self.proxy_request(self.request, method="GET")
